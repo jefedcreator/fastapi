@@ -29,5 +29,13 @@ cursor.execute(sql3)
 for i in cursor.fetchall():
 	print(i)
 
+sql4 = '''ALTER TABLE details
+ADD COLUMN discount INT DEFAULT 0;'''
+cursor.execute(sql4)
+
+# sql5 = '''ALTER TABLE details
+# ALTER discount SET DEFAULT 0;'''
+# cursor.execute(sql5)
+
 conn.commit()
 conn.close()
