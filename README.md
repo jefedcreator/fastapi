@@ -62,6 +62,12 @@ source env/Scripts/activate
 pip install -r requirements.txt
 ```
 
+### **Dump csv file to postgres database:**
+```
+python import.py
+```
+
+
 ### **Run the development server:**
 
 ```
