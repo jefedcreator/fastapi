@@ -10,6 +10,6 @@ class Details(Base):
     sku = Column(Text, primary_key=True)
     price = Column(Integer)
     category = Column(Text)
-
+    discount = Column(Integer)
 
 

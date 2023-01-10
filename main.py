@@ -32,8 +32,8 @@ async def get_products(attribute :int | str):
                 "category": category.category,
                 "price": {
                     "original" : category.price,
-                    "final": category.price,
-                    "discount_percentage": 0,
+                    "final": category.price - (category.price * category.discount/100) if (category.discount) else category.price,
+                    "discount_percentage": category.discount + "%" if(category.discount) else 0 ,
                     "currency": "USD"
                 }
             }) 
@@ -50,8 +50,8 @@ async def get_products(attribute :int | str):
                 "category": category.category,
                 "price": {
                     "original" : category.price,
-                    "final": category.price,
-                    "discount_percentage": 0,
+                    "final": category.price - (category.price * category.discount/100) if (category.discount) else category.price,
+                    "discount_percentage": category.discount + "%" if(category.discount) else 0 ,
                     "currency": "USD"
                 }
             }) 
