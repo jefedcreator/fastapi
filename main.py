@@ -1,7 +1,6 @@
 from fastapi import Depends, FastAPI, Query
 from sqlalchemy.orm import Session
-from typing import List
-from models import Base,os,Product
+from models import Product
 from typing import Optional
 from db import get_db
 app = FastAPI()
