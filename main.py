@@ -1,50 +1,62 @@
-import uvicorn
-from fastapi import FastAPI, HTTPException
-from fastapi_sqlalchemy import DBSessionMiddleware, db
+from fastapi import Depends, FastAPI, Query
+from sqlalchemy.orm import Session
+from typing import List
 
-from models import Details as ModelDetails
+app = FastAPI()
+
+# models.py
+from sqlalchemy import Column, String, Integer, Float
+from sqlalchemy.ext.declarative import declarative_base
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv('.env')
 
-app = FastAPI()
+Base = declarative_base()
 
-# to avoid csrftokenError
-app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
+class Product(Base):
+    __tablename__ = "products"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    category = Column(String, index=True)
+    sku = Column(String, index=True)
+    price_original = Column(Float, index=True)
+    discount_percentage = Column(Float, index=True)
+    price_final = Column(Float, index=True)
+    
+    def __init__(self, name: str, category: str, price_original: float, discount_percentage: float, price_final:float):
+        self.name = name
+        self.category = category
+        self.price_original = price_original
+        self.discount_percentage = discount_percentage
+        self.price_final = price_final
 
-@app.get("/", status_code=200)
-async def home():
-    return {"message": "hello world"}
+# database.py
+from sqlalchemy import create_engine
 
-@app.get('/all/{attribute}/', status_code=200)
-async def get_products(attribute :int | str):
-    categories = []
-    if type(attribute) is str:
-        categories = db.session.query(ModelDetails).filter(ModelDetails.category==attribute).all()
-    if type(attribute) is int:
-        categories = db.session.query(ModelDetails).filter(ModelDetails.price <= int(attribute)).all()
-    if len(categories) == 0:
-        raise HTTPException(status_code=404, detail="Item not found")
-    new_categories = []
-    for category in categories:
-        new_categories.append({
-            "sku": category.sku,
-            "name": category.name,
-            "category": category.category,
-            "price": {
-                "original" : category.price,
-                "final": category.price - (category.price * category.discount/100) if (category.discount) else category.price,
-                "discount_percentage": str(category.discount) + "%" if(category.discount) else str(0) + "%",
-                "currency": "USD"
-            }
-        }) 
-    return new_categories
+DATABASE_URL = os.environ['DATABASE_URL']
 
+engine = create_engine(DATABASE_URL)
+Base.metadata.create_all(bind=engine)
 
+def get_db():
+    connection = engine.connect()
+    session = Session(bind=connection)
+    return session
 
+# main.py
+from typing import Optional
 
-# To run locally
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+@app.get("/products")
+async def get_products(
+    category: Optional[str] = Query(None, alias="category"),
+    price_less_than: Optional[float] = Query(None, alias="price_less_than"),
+    db: Session = Depends(get_db),
+):
+    products = db.query(Product).all()
+    if category:
+        products = products.filter(Product.category == category)
+    if price_less_than:
+        products = products.filter(Product.price_final <= price_less_than)
+    return products
