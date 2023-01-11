@@ -1,7 +1,10 @@
 from sqlalchemy import create_engine
 import os
-from models import Base,os
+from models import Base
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+
+load_dotenv('.env')
 
 DATABASE_URL = os.environ['DATABASE_URL']
 

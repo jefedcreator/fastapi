@@ -1,9 +1,10 @@
 import sys
 from fastapi import Depends, FastAPI, Query, Request
 from sqlalchemy.orm import Session
-from models import Product
+from models import Product, Discount
 from typing import Optional
 from db import get_db
+from service import DiscountService
 app = FastAPI()
 
 @app.get("/products")
@@ -13,37 +14,25 @@ async def get_products(
     db: Session = Depends(get_db),
 ):
     products = db.query(Product).all()
+    discounts = db.query(Discount).all()
     returned_products = []
     if category:
         products = products.filter(Product.category == category)
     if price_less_than:
-        products = products.filter(Product.price_final <= price_less_than)
-    for product in products:
-        returned_products.append({
-            "sku": product.sku,
-            "name": product.name,
-            "category": product.name,
-            "price": {
-                "original": product.price_original,
-                "final":  product.price_original - (product.price_original * product.discount_percentage/100) if(product.discount_percentage != 0) else product.price_original,
-                "discount_percentage": "null" if(product.discount_percentage == 0) else str(product.discount_percentage) +"%",
-                "currency": "USD"
-            }
-        })
-    return returned_products
+        products = products.filter(Product.price <= price_less_than)
 
-@app.post("/add")
-async def add_product(product : Request, db: Session = Depends(get_db)):
+    discounted_products = DiscountService.apply_discounts(products=products,discounts=discounts)
+    return discounted_products
+
+@app.post("/discounts")
+async def add_discount(product : Request, db: Session = Depends(get_db)):
     req_info = await product.json()
-    print("request info",req_info)
-    name = req_info.get("name", None)
     category = req_info.get("category", None)
     sku = req_info.get("sku", None)
-    price_original = req_info.get("price_original", None)
-    discount_percentage = req_info.get("discount_percentage", None)
+    percentage = req_info.get("percentage", None)
     try:
-        product = Product(name=name,category=category,sku=sku,price_original=price_original,discount_percentage=discount_percentage)
-        db.add(product)
+        discount =  Discount(category=category,sku=sku,percentage=percentage)
+        db.add(discount)
         db.commit()
 
         return {"success" : True}

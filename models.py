@@ -1,26 +1,32 @@
-from sqlalchemy import Column, String, Integer, Float
+from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv('.env')
 
 Base = declarative_base()
 
+class Discount(Base):
+    __tablename__ = "discounts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sku = Column(String, index=True)
+    category = Column(String, index=True)
+    percentage = Column(Float)
+
+    def __init__(self, sku=None, category=None, percentage=0):
+        self.sku = sku
+        self.category = category
+        self.percentage = percentage
+        
 class Product(Base):
     __tablename__ = "products"
+
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    category = Column(String, index=True)
-    sku = Column(String, index=True)
-    price_original = Column(Float, index=True)
-    discount_percentage = Column(Float, index=True)
-    
-    def __init__(self, name: str, category: str, sku : str, price_original: float, discount_percentage: float):
+    sku = Column(String, unique=True, index=True)
+    name = Column(String)
+    category = Column(String)
+    price = Column(Float)
+
+    def __init__(self, sku, name, category, price):
+        self.sku = sku
         self.name = name
         self.category = category
-        self.price_original = price_original
-        self.discount_percentage = discount_percentage
-        self.sku = sku
-
+        self.price = price
