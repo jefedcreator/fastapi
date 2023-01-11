@@ -12,7 +12,6 @@ A simple fast api server
 
 [Testing](#testing)
 
-[Live](#live-server)
 
 ## Introduction
 This is a simple fast api server with two apis. a home api that returns hello world and a get products api that Can be filtered by `category` as a query parameter and Can be filtered by `price_less_than` as a query parameter, returns products that meet these criteria.- Returns a list of products with the given discounts applied where necessary.
@@ -44,7 +43,7 @@ pip install -r requirements.txt
 
 - [Fast Api](https://fastapi.tiangolo.com/) FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.7+ based on standard Python type hints.
 
-- [SQLAlchemy](https://www.sqlalchemy.org/) libraries to handle the lightweight sqlite database. 
+- [SQLAlchemy](https://www.sqlalchemy.org/) python libraries to handle the postgresql database. 
 
 
 ### **Initialize and activate a virtualenv using:**
