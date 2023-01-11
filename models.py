@@ -16,11 +16,11 @@ class Product(Base):
     sku = Column(String, index=True)
     price_original = Column(Float, index=True)
     discount_percentage = Column(Float, index=True)
-    price_final = Column(Float, index=True)
     
-    def __init__(self, name: str, category: str, price_original: float, discount_percentage: float, price_final:float):
+    def __init__(self, name: str, category: str, sku : str, price_original: float, discount_percentage: float):
         self.name = name
         self.category = category
         self.price_original = price_original
         self.discount_percentage = discount_percentage
-        self.price_final = price_final
+        self.sku = sku
+
