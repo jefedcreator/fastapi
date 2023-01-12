@@ -25,13 +25,36 @@ async def get_products(
     return discounted_products
 
 @app.post("/discounts")
-async def add_discount(product : Request, db: Session = Depends(get_db)):
-    req_info = await product.json()
+async def add_discount(discount : Request, db: Session = Depends(get_db)):
+    req_info = await discount.json()
     category = req_info.get("category", None)
     sku = req_info.get("sku", None)
     percentage = req_info.get("percentage", None)
     try:
         discount =  Discount(category=category,sku=sku,percentage=percentage)
+        db.add(discount)
+        db.commit()
+
+        return {"success" : True}
+    
+    except:
+        db.rollback()
+        print(sys.exc_info())
+        return {"success" : False}
+    
+    finally:
+        db.close()
+
+#testing purposes
+@app.post("/products")
+async def add_discount(product : Request, db: Session = Depends(get_db)):
+    req_info = await product.json()
+    category = req_info.get("category", None)
+    sku = req_info.get("sku", None)
+    name = req_info.get("name", None)
+    price = req_info.get("price", None)
+    try:
+        discount =  Product(category=category,sku=sku,name=name,price=price)
         db.add(discount)
         db.commit()
 
