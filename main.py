@@ -15,7 +15,6 @@ async def get_products(
 ):
     products = db.query(Product).all()
     discounts = db.query(Discount).all()
-    returned_products = []
     if category:
         products = products.filter(Product.category == category)
     if price_less_than:
