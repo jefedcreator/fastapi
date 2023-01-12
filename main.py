@@ -28,7 +28,7 @@ async def add_discount(discount : Request, db: Session = Depends(get_db)):
     req_info = await discount.json()
     category = req_info.get("category", None)
     sku = req_info.get("sku", None)
-    percentage = req_info.get("percentage", None)
+    percentage = req_info.get("percentage", 0)
     try:
         discount =  Discount(category=category,sku=sku,percentage=percentage)
         db.add(discount)
