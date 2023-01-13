@@ -20,7 +20,7 @@ async def get_products(
     if price_less_than:
         products = ProductService.filter_products_by_price(products=products,query=price_less_than)
     if category and price_less_than:
-        products = ProductService.filter_products_by_category(products=products,query=category) +  ProductService.filter_products_by_price(products=products,query=price_less_than)
+        products = ProductService.filter_products_by_price_category(products=products,price_query=price_less_than,query=category)
 
     discounted_products = ProductService.apply_discounts(products=products,discounts=discounts)
     return discounted_products

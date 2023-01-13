@@ -39,3 +39,10 @@ class ProductService:
             if(int(product["price"]) <= query):
                 filtered_product.append(product)
         return filtered_product
+
+    def filter_products_by_price_category(products : List[Product], price_query: int, query : str) -> List[Product]:
+        filtered_product = []
+        for product in products:
+            if(int(product["price"]) <= price_query and product["category"] == query):
+                filtered_product.append(product)
+        return filtered_product
