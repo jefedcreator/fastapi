@@ -1,20 +1,11 @@
 from typing import List
 from models import Product, Discount
 
-class DiscountService:
+class ProductService:
     @staticmethod
     def apply_discounts(products: List[Product], discounts: List[Discount]) -> List[Product]:
         print("products", products)
         print("discounts", discounts)
-        for product in products:
-            applicable_discounts = [d for d in discounts if (d.sku == product.sku) or (d.category == product.category)]
-            if not applicable_discounts:
-                continue
-            max_discount = max(applicable_discounts, key=lambda x: x.percentage)
-            product.discount_percentage = max_discount.percentage
-            product.final_price = product.price - (product.price * (max_discount.percentage / 100))
-
-
         for product in products:
             applicable_discounts = [d for d in discounts if (d.sku == product.sku) or (d.category == product.category)]
             print("applicable_discounts", applicable_discounts)
@@ -34,3 +25,17 @@ class DiscountService:
                     "currency": "USD"
                 }
         return products
+
+    def filter_products_by_category(products : List[Product], query: str) -> List[Product]:
+        filtered_product = []
+        for product in products:
+            if(product["category"] == query):
+                filtered_product.append(product)
+        return filtered_product
+
+    def filter_products_by_price(products : List[Product], query: int) -> List[Product]:
+        filtered_product = []
+        for product in products:
+            if(int(product["price"]) <= query):
+                filtered_product.append(product)
+        return filtered_product

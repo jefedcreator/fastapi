@@ -25,8 +25,13 @@ class Product(Base):
     category = Column(String)
     price = Column(Float)
 
-    def __init__(self, sku, name, category, price):
+    def __init__(self, args, sku, name, category, price):
         self.sku = sku
         self.name = name
         self.category = category
         self.price = price
+        for k in args:
+            setattr(self, k, args[k])
+
+    def __getitem__(self, item):
+        return getattr(self, item)
